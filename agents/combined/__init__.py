@@ -7,7 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from agents.auto import AutomationAgent
 from agents.think import thinkModel
 from agents.tool import toolModel
-from agents.vision import visionModel
+# from agents.vision import visionModel
+from agents.agentic import agenticModel
 from agents.extract import extractModel
 
 class combinedModel():
@@ -15,9 +16,10 @@ class combinedModel():
         os.environ["GROQ_API_KEY"] = "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"
 
         print("Initializing models...")
-        self.think_model = thinkModel()
+        # self.think_model = thinkModel()
         self.tool_model = toolModel()
-        self.vision_model = visionModel()
+        # self.vision_model = visionModel()
+        self.vision_model = agenticModel()
         self.agent = AutomationAgent()
         self.extract_model = extractModel()
         if os.path.exists("ui_elements.json")==False or os.path.getsize("ui_elements.json") == 0:
@@ -46,13 +48,13 @@ class combinedModel():
 
     def call(self, query):
         chat_history = []
+        last_command = None
         while(True):
-            think_query = self.vision_model.call(query, self.vision_model.capture_screenshot(), chat_history)
-            print("done thinking")
+            think_query = self.vision_model.call(query, self.agent.capture_screen(), chat_history)
             clean_query = re.sub(r'<think>.*?</think>', '', think_query, flags=re.DOTALL).strip()
-            print("Cleaned query:", clean_query)
+            print("Thought action:", clean_query)
             tool_call = self.tool_model.call(clean_query).content
-            print(tool_call)
+            print("Tool action:", tool_call)
             json_pattern = r'```json\s*(\{.*?\})\s*```'
             match = re.search(json_pattern, tool_call, re.DOTALL)
             if match:

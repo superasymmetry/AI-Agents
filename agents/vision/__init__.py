@@ -35,55 +35,55 @@ class visionModel():
         screenshot.save(buffered, format="JPEG")
         return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
-    # def call(self, query, img_base64, chat_history):
-    #     chat_completion = self.client.chat.completions.create(
-    #         messages=[
-    #             {
-    #                 "role": "user",
-    #                 "content": [
-    #                     {"type": "text", "text": f'You are an agent that navigates the laptop and executes tasks. The user\'s task is "{query}". Decompose the user\'s query into its most fundamental steps, which must be one of left-clicking, right-clicking, typing, dragging the cursor, scrolling, or pressing hotkeys. You have to determine the current state in the task based on the provided action history {chat_history} and the screenshot given (keep in mind that the screenshot is a greater determinant of the current progress in the task than the chat history). When looking at the screenshot, check which page the screen is at at the current moment. If it is not at the state you intend it, do actions to get it to that state. Think through step-by-step the entire process of executing the task. The features of the UI are given in the image. Please output **one sentence** that states the immediate next step AND ONLY THE IMMEDIATE NEXT STEP NOTHING MORE to performing the user\'s query. If you realize the task is already finished, output "Task completed".'},
-    #                     {
-    #                         "type": "image_url",
-    #                         "image_url": {
-    #                             "url": f"data:image/jpeg;base64,{img_base64}",
-    #                         },
-    #                     },
-    #                 ],
-    #             }
-    #         ],
-    #         model="llama-3.2-90b-vision-preview",
-    #     )
-
-    #     return (chat_completion.choices[0].message.content)
-
     def call(self, query, img_base64, chat_history):
-        response = self.client.chat.completions.create(
-            model="deepseek-chat",
+        chat_completion = self.client.chat.completions.create(
             messages=[
                 {
                     "role": "user",
                     "content": [
-                        {
-                            "type": "text",
-                            "text": (
-                                f'You are an agent that navigates the laptop and executes tasks. '
-                                f'The user\'s task is "{query}". Decompose the query into its most fundamental steps, '
-                                f'considering the following chat history: {chat_history} and the current UI state provided by the image. '
-                                'Output only one sentence stating the immediate next step. '
-                                'If the task is completed, output "Task completed".'
-                            )
-                        },
+                        {"type": "text", "text": f'You are an agent that navigates the laptop and executes tasks. The user\'s task is "{query}". Decompose the user\'s query into its most fundamental steps, which must be one of left-clicking, right-clicking, typing, dragging the cursor, scrolling, or pressing hotkeys. You have to determine the current state in the task based on the provided action history {chat_history} and the screenshot given (keep in mind that the screenshot is a greater determinant of the current progress in the task than the chat history). When looking at the screenshot, check which page the screen is at at the current moment. If it is not at the state you intend it, do actions to get it to that state. Think through step-by-step the entire process of executing the task. The features of the UI are given in the image. Please output **one sentence** that states the immediate next step AND ONLY THE IMMEDIATE NEXT STEP NOTHING MORE to performing the user\'s query. If you realize the task is already finished, output "Task completed".'},
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/jpeg;base64,{img_base64}"
-                            }
-                        }
-                    ]
+                                "url": f"data:image/jpeg;base64,{img_base64}",
+                            },
+                        },
+                    ],
                 }
-            ]
+            ],
+            model="llama-3.2-90b-vision-preview",
         )
-        return response.choices[0].message.content
+
+        return (chat_completion.choices[0].message.content)
+
+    # def call(self, query, img_base64, chat_history):
+    #     response = self.client.chat.completions.create(
+    #         model="deepseek-chat",
+    #         messages=[
+    #             {
+    #                 "role": "user",
+    #                 "content": [
+    #                     {
+    #                         "type": "text",
+    #                         "text": (
+    #                             f'You are an agent that navigates the laptop and executes tasks. '
+    #                             f'The user\'s task is "{query}". Decompose the query into its most fundamental steps, '
+    #                             f'considering the following chat history: {chat_history} and the current UI state provided by the image. '
+    #                             'Output only one sentence stating the immediate next step. '
+    #                             'If the task is completed, output "Task completed".'
+    #                         )
+    #                     },
+    #                     {
+    #                         "type": "image_url",
+    #                         "image_url": {
+    #                             "url": f"data:image/jpeg;base64,{img_base64}"
+    #                         }
+    #                     }
+    #                 ]
+    #             }
+    #         ]
+    #     )
+    #     return response.choices[0].message.content
     
 if __name__ == "__main__":
     vision_model = visionModel()

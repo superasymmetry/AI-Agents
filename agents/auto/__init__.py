@@ -166,13 +166,15 @@ class AutomationAgent():
         return self.tree
     
     def capture_screen(self):
-        screenshot = pyautogui.screenshot()
-        basedir = os.path.dirname(os.path.abspath(__file__))
-        file_dir = os.path.join(basedir, "files")
-        screenshot.save(os.path.join(file_dir,"screenshot.png"))
-        image_path = file_dir+"/screenshot.png"
-        with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+        im1 = pyautogui.screenshot()
+        im1.save(r"C:\Users\2025130\Documents\aiagent\screenshot.jpeg")
+        # image_path = pathlib.Path("C:\\Users\\2025130\\Documents\\aiagent\\screenshot.png").as_uri()
+
+        with open(r"C:\Users\2025130\Documents\aiagent\screenshot.jpeg", "rb") as f:
+            img = base64.b64encode(f.read()).decode("utf-8")
+
+        img = f"data:image/jpeg;base64,{img}"
+        return img
         
 
 
