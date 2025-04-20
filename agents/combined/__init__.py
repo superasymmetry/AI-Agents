@@ -10,6 +10,7 @@ from agents.tool import toolModel
 # from agents.vision import visionModel
 from agents.agentic import agenticModel
 from agents.extract import extractModel
+import time
 
 class combinedModel():
     def __init__(self):
@@ -48,11 +49,12 @@ class combinedModel():
 
     def call(self, query):
         chat_history = []
-        last_command = None
         while(True):
             think_query = self.vision_model.call(query, self.agent.capture_screen(), chat_history)
+            if("completed" in think_query or "finish" in think_query or "done" in think_query or "completed" in think_query or "finished" in think_query):
+                return "Task completed"
             clean_query = re.sub(r'<think>.*?</think>', '', think_query, flags=re.DOTALL).strip()
-            print("Thought action:", clean_query)
+            print("Thought action:", think_query)
             tool_call = self.tool_model.call(clean_query).content
             print("Tool action:", tool_call)
             json_pattern = r'```json\s*(\{.*?\})\s*```'
@@ -66,14 +68,13 @@ class combinedModel():
                     print("Error decoding JSON:", e)
             else:
                 print("No JSON block found.")
-            chat_history.append(command)
+            chat_history.append({"role": "assistant", "content": clean_query})
+            chat_history.append({"role": "tool", "content": json_str})
 
-            if("completed" in command or "finish" in command or "done" in command or "completed" in command):
-                return "Task completed"
-            elif(command["action"] == "left_click"):
-                self.agent.left_click(int(command["details"]["x"]), int(command["details"]["y"]))
+            if(command["action"] == "left_click"):
+                self.agent.left_click(int(command["details"]["x"])+5, int(command["details"]["y"]))
             elif(command["action"] == "right_click"):
-                self.agent.right_click(int(command["details"]["x"]), int(command["details"]["y"]))
+                self.agent.right_click(int(command["details"]["x"])+5, int(command["details"]["y"]))
             elif(command["action"] == "vertical_scroll"):
                 self.agent.scroll(command["details"]["direction"])
             elif(command["action"] == "horizontal_scroll"):
@@ -81,12 +82,16 @@ class combinedModel():
             elif(command["action"] == "move_cursor"):
                 self.agent.move_cursor(int(command["details"]["x"]), int(command["details"]["y"]))
             elif(command["action"] == "type_text"):
+                if('key' in command["details"]):
+                    self.agent.hotkey(command["details"]["key"])
                 self.agent.type(command["details"]["text"])
             elif(command["action"] == "press_hotkey"):
                 self.agent.hotkey(command["details"]["key"])
             else:
                 print("Invalid action")
                 # route to debug model
+
+            time.sleep(1)
             
 if __name__ == "__main__":
     combined_model = combinedModel()

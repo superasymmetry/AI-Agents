@@ -56,40 +56,28 @@ class visionModel():
 
         return (chat_completion.choices[0].message.content)
 
-    # def call(self, query, img_base64, chat_history):
-    #     response = self.client.chat.completions.create(
-    #         model="deepseek-chat",
-    #         messages=[
-    #             {
-    #                 "role": "user",
-    #                 "content": [
-    #                     {
-    #                         "type": "text",
-    #                         "text": (
-    #                             f'You are an agent that navigates the laptop and executes tasks. '
-    #                             f'The user\'s task is "{query}". Decompose the query into its most fundamental steps, '
-    #                             f'considering the following chat history: {chat_history} and the current UI state provided by the image. '
-    #                             'Output only one sentence stating the immediate next step. '
-    #                             'If the task is completed, output "Task completed".'
-    #                         )
-    #                     },
-    #                     {
-    #                         "type": "image_url",
-    #                         "image_url": {
-    #                             "url": f"data:image/jpeg;base64,{img_base64}"
-    #                         }
-    #                     }
-    #                 ]
-    #             }
-    #         ]
-    #     )
-    #     return response.choices[0].message.content
-    
-if __name__ == "__main__":
-    vision_model = visionModel()
-    screenshot_base64 = vision_model.capture_screenshot()
-    response = vision_model.call("Open Google Chrome and search for the weather", screenshot_base64, [])
-    print(response)
+    def find_bounding_boxes(self, query, img_base64):
+        formatted_prompt = self.prompt_template.format(query=query)
+        
+        chat_completion = self.client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": formatted_prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{img_base64}",
+                            },
+                        },
+                    ],
+                }
+            ],
+            model="llama-3.2-90b-vision-preview",
+        )
+
+        return (chat_completion.choices[0].message.content)
 
     
 #         prompt = f"""You are an agent that navigates the laptop and executes tasks. The user's task is "{query}". Decompose the user's query into its most fundamental steps, which must be one of left-clicking, right-clicking, typing, dragging the cursor, and scrolling. Think through step-by-step the entire process of executing the task.

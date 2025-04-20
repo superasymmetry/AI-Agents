@@ -3,15 +3,9 @@
 ## Task Overview
 You are a **tool finder agent** responsible for controlling this laptop. Given an action, which is `{query}`, your task is to:
 
-1. Identify the correct UI feature from the list of extracted UI features.
-2. Retrieve the coordinates of the correct UI feature.
+1. Look at the screenshot given, and identify the correct UI feature from the list of extracted UI features.
+2. Look at the screenshot given, and retrieve the coordinates of the correct UI feature.
 3. Output a JSON object that specifies the required action and the corresponding coordinates.
-
-## UI Features and Actions
-- The list of **UI features** extracted from the laptop is:  
-  `{ui_features}`
-- And the list of UI features extracted on the taskbar of the laptop is:
-  `{taskbar}`
 
 - The available **actions** to output are:
   - `left-click`
@@ -121,9 +115,9 @@ To type a certain text
     "action": "type_text",
     "details": {{
         "keys": [
-            "a list of hotkeys that can be one or multiple. The hotkeys choices are as follows: ",
+            "output a set of hotkeys to press that can be one or multiple. The hotkeys choices are as follows: ",
             [
-                "accept", "add", "altleft", "altright", "apps", "backspace",
+                "accept", "add", "alt", "altleft", "altright", "apps", "backspace",
                 "browserback", "browserfavorites", "browserforward", "browserhome",
                 "browserrefresh", "browsersearch", "browserstop", "capslock", "clear",
                 "convert", "ctrl", "ctrlleft", "ctrlright", "decimal", "del", "delete",

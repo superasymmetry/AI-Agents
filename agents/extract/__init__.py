@@ -147,6 +147,7 @@ if __name__ == "__main__":
             j["desktop"][name] = coords
         # print(name, j["desktop"][name])
     active_window_elements = extract.get_active_window_elements()
+    print("Active window elements", active_window_elements)
 
     active_window = gw.getActiveWindow().title
     j[f"{active_window}"] = {}
@@ -157,3 +158,4 @@ if __name__ == "__main__":
 
     with open("ui_elements.json", "w") as file:
         json.dump(j, file, indent=4)
+    print("taskbar elements", j["taskbar"])

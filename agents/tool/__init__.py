@@ -36,7 +36,7 @@ class toolModel():
             j = json.load(f)
             active_window = gw.getActiveWindow().title
             if(active_window not in j):
-                j[active_window] = self.extract_model.get_clickable_elements()
+                j[active_window] = self.extract_model.get_active_window_elements()
         
             ui_features = j[active_window]
             taskbar = j["taskbar"]
@@ -50,9 +50,13 @@ class toolModel():
         formatted_prompt = self.prompt_template.format(ui_features=ui_features, taskbar=taskbar, query=query)
         
         # Invoke the Groq model with the formatted prompt
-        response = self.llm.invoke(formatted_prompt)
+        response = self.llm.invoke(formatted_prompt, config={"max_tokens": 1024})
         return response
 
+if __name__ == "__main__":
+    tool_model = toolModel()
+    response = tool_model.call("Open Google Chrome and search for the weather")
+    print(response)
 # Example usage
 # think_model = thinkModel()
 # tool_query = think_model.call("Open Google Chrome and search for the weather").content
